@@ -1,15 +1,10 @@
 # Data directories
 data/
 output/
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+*.csv
+*.json
+*.txt
+!requirements.txt
 
 # Python
 __pycache__/
@@ -39,3 +34,16 @@ wheels/
 .vscode/
 *.swp
 *.swo
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
