@@ -12,7 +12,7 @@ import os
 import pandas as pd
 import glob
 import datetime
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from multiprocessing import Pool, cpu_count
 from astropy.time import Time
 
 # Constants for TLE calculations
@@ -326,14 +326,16 @@ def run_pipeline():
     
     # Process raw TLE files
     files = [f for f in os.listdir(ORIGINAL_DATA_DIR) if f.lower().endswith('.txt')]
-    max_workers = min(8, os.cpu_count() or 4)
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(process_one_file, f, ORIGINAL_DATA_DIR, PROCESSED_DATA_DIR, sat_info) for f in files]
-        for future in as_completed(futures):
-            try:
-                future.result()
-            except Exception as e:
-                print(f"Error processing file: {e}")
+    max_workers = min(8, cpu_count() or 4)
+    
+    # 创建进程池
+    with Pool(processes=max_workers) as pool:
+        # 使用 starmap 传递多个参数
+        args = [(f, ORIGINAL_DATA_DIR, PROCESSED_DATA_DIR, sat_info) for f in files]
+        try:
+            pool.starmap(process_one_file, args)
+        except Exception as e:
+            print(f"Error in multiprocessing: {e}")
     
     # Process overlaped TLE files
     process_overlaped_tle_files()
